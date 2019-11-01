@@ -1,0 +1,197 @@
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  background: rgb(255, 194, 209);
+}
+#carousel {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 63vmin;
+  height: 63vmin;
+  transform: translate3D(-50%, -50%, 0);
+  border-radius: 50%;
+  padding: 7vmin;
+  border: 4px solid black;
+  box-shadow: 0px 0px 40px 10px black;
+}
+#carousel .container {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+#carousel .container .circle,
+#carousel .container .circle-centered {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 9vmin;
+  height: 9vmin;
+  border-radius: 100%;
+  font-size: 3.3vmin;
+  line-height: 9vmin;
+  text-align: center;
+  color: white;
+  font-family: 'Inconsolata', monospace;
+  box-shadow: 0px 0px 10px 2px black;
+}
+#carousel .container .circle div,
+#carousel .container .circle-centered div {
+  position: absolute;
+  bottom: -30%;
+  left: 0;
+  right: 0;
+  font-size: 2.5vmin;
+}
+
+#pause, #goBack{
+  position: fixed;
+  top: 5vmin;
+  left: 5vmin;
+  width: 5vmin;
+  height: 5vmin;
+  cursor: pointer;
+}
+#pause:before, #pause:after, #goBack:before, #goBack:after {
+  content: '';
+  position: absolute;
+  top: 0;
+  width: 40%;
+  height: 100%;
+  border-radius: 10%;
+  background: black;
+}
+#pause:before, #goBack:before {
+  left: 0;
+}
+#pause:after, #goBack:after {
+  right: 0;
+}
+
+
+#score {
+  position: absolute;
+  top: 3vmin;
+  right: 4vmin;
+  height: 7vmin;
+  cursor: pointer;
+  font-family: 'Inconsolata', monospace;
+  font-weight: bold;
+  font-size: 7vmin;
+  color: black;
+  z-index: 100;
+}
+#score:before,
+#score:after {
+  position: absolute;
+  top: 3vmin;
+  right: 5vmin;
+  height: 100%;
+  cursor: pointer;
+  font-family: 'Inconsolata', monospace;
+  font-weight: bold;
+  font-size: 7vmin;
+  z-index: 100;
+}
+
+.menu, .gameOver, .table{
+  position: fixed;
+  height: calc(100% + 20px);
+  width: 100%;
+  background: rgb(255, 164, 187);
+  z-index: 999;
+}
+
+.gameOver {
+  width: 100%;
+  text-align: center;
+}
+.gameOver p {
+  font-family: 'Inconsolata', monospace;
+  text-align: center;
+  font-size: 30px;
+  font-weight: 900;
+}
+.gameOver input {
+  margin-left: auto;
+  margin-right: auto;
+  font-family: 'Inconsolata', monospace;
+  text-align: center;
+  font-size: 30px;
+  width: 300px;
+  height: 50px;
+  font-weight: 900;
+  border: none;
+  border-bottom: 3px solid black;
+  background: rgb(255, 164, 187);
+}
+.gameOver input:focus {
+  outline: 0;
+}
+
+.buttons {
+  margin: auto;
+  width: 80%;
+  height: 100%;
+  margin-top: 50px;
+}
+button {
+  margin: auto;
+  margin-top: 5%;
+  width: 100%;
+  height: 13%;
+  font-size: 6vmin;
+  text-align: center;
+  border-radius: 2vmin;
+  border: 1px solid black;
+  background-color: rgb(255, 214, 216);
+  transition: 0.2s;
+  font-family: 'Inconsolata', monospace;
+}
+button:hover {
+  margin: auto;
+  margin-top: 5%;
+  width: 100%;
+  height: 13%;
+  font-size: 6vmin;
+  text-align: center;
+  border-radius: 2vmin;
+  border: 1px solid black;
+  background-color: lightgrey;
+  transition: 0.2s;
+  font-family: 'Inconsolata', monospace;
+}
+button:focus {
+  outline: 0;
+}
+
+.table h1 {
+  width: 150px;
+  margin: auto;
+  margin-top: 50px;
+  font-family: 'Inconsolata', monospace;
+  font-size: 50px;
+}
+.table table {
+  margin: auto;
+  margin-top: 20px;
+  border: 2px solid black;
+  width: 60%;
+  min-width: 300px;
+  max-width: 600px;
+  height: 70%;
+  font-family: 'Inconsolata', monospace;
+}
+.table table tr td {
+  border: 1px solid black;
+  font-size: 20px;
+  text-align: center;
+}
+.table table tr:first-child td {
+  font-size: 30px;
+  font-weight: 900;
+}
