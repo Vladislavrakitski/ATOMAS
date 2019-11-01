@@ -170,11 +170,11 @@ button:focus {
 }
 
 .table h1 {
-  width: 150px;
+  width: 120px;
   margin: auto;
   margin-top: 50px;
   font-family: 'Inconsolata', monospace;
-  font-size: 50px;
+  font-size: 40px;
 }
 .table table {
   margin: auto;
