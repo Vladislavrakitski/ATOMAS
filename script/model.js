@@ -126,7 +126,7 @@ function AtomasModel () {
     this.build();
   }
 
-  this.build = () => {
+  this.build = () => {                                  // строим поле игры
 
     params.carousel = document.createElement('div');
     params.container = document.createElement('div');
@@ -146,7 +146,7 @@ function AtomasModel () {
   }
 
   this.installation = () => {
-    for (let i = 0; i < 6; i++) Atom.atoms.push(new Atom(Math.floor(Math.random() * 3)));   // изначально добавили 6 элементов
+    for (let i = 0; i < 6; i++) Atom.atoms.push(new Atom(Math.floor(Math.random() * 3)));   // изначально добавили 6 элементов от 1 до 3
     params.generator = new Generator(Math.floor(Math.random() * 4));                        // и центральный элемент
     for (let atom of Atom.atoms) params.container.appendChild(atom.el);                     // добавили в контейнер элементы
     params.container.appendChild(params.generator.el);                                      // добавили центральный элемент в контейнер
@@ -155,7 +155,7 @@ function AtomasModel () {
   }
 
   this.resize = () => { 
-    params.vmin = Math.min(window.innerWidth, window.innerHeight) / 100;               // ищем мин размер 
+    params.vmin = Math.min(window.innerWidth, window.innerHeight) / 100;                // ищем мин размер 
     params.carouselBoundingRect = params.carousel.getBoundingClientRect();              // забираем размеры контейнера
     params.carouselSize = {
       w: params.carouselBoundingRect.width,
@@ -168,7 +168,7 @@ function AtomasModel () {
 
   this.setPosition = () => {                                  // функция счета координат
     degToRad = (deg) => (Math.PI * deg) / 180;                // перевод градусов в радианы
-    Atom.atoms[0].el.getBoundingClientRect().width;           // .......................................
+    Atom.atoms[0].el.getBoundingClientRect().width;  
     for (let i = 0; i < Atom.atoms.length; i++) {             // пробегаем по массиву
       let angle = 360 / Atom.atoms.length * (i + 1);          // считем угол и координаты для каждого элемента круга
       let transformY = Math.sin(degToRad(angle)) * (params.carouselSize.radius - 10 * params.vmin) - params.carouselSize.circle / 2;
@@ -177,7 +177,7 @@ function AtomasModel () {
     }
   }
 
-  this.renderIntermediateClick = (e) => {                     // функция обработки клика между элементами 
+  this.workMiddleClick = (e) => {                     // функция обработки клика между элементами 
     if (Atom.atoms.length < 2) {                              // если меньше 2 элементов  
       // создаем новый элемент
       let atom = params.generator.Z < 0 ? new Atom(4 + params.generator.Z, true) : new Atom(params.generator.Z - 1);
@@ -203,7 +203,7 @@ function AtomasModel () {
     if (!params.preventClick) this.addAtom(atom1);                      // проверяем можно ли кликать и вызываем функцию добавления 
   }
 
-  this.renderDirectClick = (e) => {
+  this.workCenterClick = (e) => {
     let target = e.target.classList.contains('circle') ? e.target : e.target.parentNode;  // ловим элемент
     let clickedAtomI;                                                                     // доп переменная
     for (let i = 0; i < Atom.atoms.length; i++) {                                         // проходим по массиву атомов
@@ -216,7 +216,7 @@ function AtomasModel () {
       Atom.atoms.splice(clickedAtomI, 1);                              // из массива тоже
       this.setPosition();                                              // устанавливаем новые координаты для остальных
       for (let atom of Atom.atoms) {                                   // проходим по массиву снова
-        if (atom.Z == -1) this.checkForFusions(atom);                  // ищем "+" если есть - проверяем на слияние
+        if (atom.Z == -1) this.checkForConnect(atom);                  // ищем "+" если есть - проверяем на слияние
       }  
       this.aConversionToPlus();                                        // разрешаем превращение в "+"
     }
@@ -231,40 +231,43 @@ function AtomasModel () {
     let mx = (cx1 + cx2) / 2;                                      // считаем среднее 
     let my = (cy1 + cy2) / 2;
     // mx - x и my - y координаты точки клика в системе координат где 0,0 - центр главного круга;
+
     return Math.sqrt(Math.pow(mx - x, 2) + Math.pow(my - y, 2));   // получаем расстояние от клика до центра 
   }
 
-  this.addAtom = (atomBefor) => {        // функция добавления элемента  // на вход получаем элемент после которого нужно добавить 
+  this.addAtom = (atomBefor) => {                                        // на вход получаем элемент после которого нужно добавить 
     this.pClick();                                                       // отключаем возможность клика
+
     // создаем новый элемент
     let atom = params.generator.Z < 0 ? new Atom(4 + params.generator.Z, true) : new Atom(params.generator.Z - 1);
     params.container.insertBefore(atom.el, atomBefor.el);                // добавляем элемент в контейнер 
     Atom.atoms.splice(Atom.atoms.indexOf(atomBefor) + 1, 0, atom);       // добавляем в массив
     params.generator.update();                                           // обновляем центр
-    this.setPosition();                                                   // просчитываем координаты и устанавливаем на места элементы
-    this.doTheFusionDance(atom);                                          // вызываем функцию слияния и передаем аргументом новый атом
+    this.setPosition();                                                  // просчитываем координаты и устанавливаем на места элементы
+    this.connectAtoms(atom);                                         // вызываем функцию слияния и передаем аргументом новый атом
+    this.resize();
   }
 
-  this.doTheFusionDance = (atom) => {                             // функция слияния
-    if (atom.Z == -1) this.checkForFusions(atom);                 // проверяем на PLUS если да то проверяем на слияние
-    else if (atom.Z == -4) this.checkForFusions(atom, true);      // и на DARK PLUS если да то проверяеv на слияние
-    else this.checkForFusionTriggers();                           // если ни PLUS не DARK PLUS то проверить на слияние в круге 
+  this.connectAtoms = (atom) => {                                 // функция слияния
+    if (atom.Z == -1) this.checkForConnect(atom);                 // проверяем на PLUS если да то проверяем на слияние
+    else if (atom.Z == -4) this.checkForConnect(atom, true);      // и на DARK PLUS если да то проверяеv на слияние
+    else this.checkForConnectTriggers();                           // если ни PLUS не DARK PLUS то проверить на слияние в круге 
   }
 
-  this.checkForFusionTriggers = () => {                // проверка на слияние в круге 
+  this.checkForConnectTriggers = () => {                // проверка на слияние в круге 
     let fused = false;                  
     for (let a of Atom.atoms) {                        // проходим по массиву элементов в круге 
       if (a.Z == -1) {                                 // ищем PLUS
-        this.checkForFusions(a);                       // если нашли то проверяем на слияние
+        this.checkForConnect(a);                       // если нашли то проверяем на слияние
         fused = true;                  
       }
     }  
-    if (!fused) this.aClick();                         // отключаем реакцию на клики пока идет слияние элементов
+    if (!fused) this.aClick();                         // отключаем реакцию на клик пока элементы сливаются
   }
 
-  this.checkForFusions = (atom, isDarkPlus = false, flag = false, intermediateResult = false) => {
-    let plusI = Atom.atoms.indexOf(atom);                  // получаем индекс элемента "+"
-    let [index1, index2] = this.getAdjacentAtoms(plusI);        // получаем индексы соседей
+  this.checkForConnect = (atom, isDarkPlus = false, flag = false, intermediateResult = false) => {
+    let plusI = Atom.atoms.indexOf(atom);                       // получаем индекс элемента "+"
+    let [index1, index2] = this.getNeighboringAtoms(plusI);        // получаем индексы соседей
     if (this.isEdgeCase(atom, index1, index2, isDarkPlus)) {    // если соседи не равны и не DARK PLUS, заканчиваем проверку 
       this.aClick();
       return;
@@ -281,13 +284,13 @@ function AtomasModel () {
         else adder = Atom.atoms[index1].Z - 1;            // если обычный "+" то его заряд будет равен заряду одного из соседей
       };
 
-      // пока условия выполняются и isFuseable возвращает true, элементы соеденяются и снова мы проверяем соседей
-      while(this.isFuseable(index1, index2, isDarkPlus)) {
+      // пока условия выполняются и isItConnectable возвращает true, элементы соеденяются и снова мы проверяем соседей
+      while(this.isItConnectable(index1, index2, isDarkPlus)) {
         // ....... в первой проверке по умолчанию false т.к в любом случае нужно переместить соседей
         if (!flag) {                                                       // перемести соседей если флаг false
           setTimeout(() => {                                               // работает самовызывающуюся функцию каждые 300 мс
-            this.transitionUpperIndexAtoms(plusI, index1, index2);      // устанавливаем координаты перемещения и задержку
-            this.checkForFusions(atom, isDarkPlus, true, adder);                // рекурсия и передаем флаг true
+            this.getSurroundingIndexes(plusI, index1, index2);      // устанавливаем координаты перемещения и задержку
+            this.checkForConnect(atom, isDarkPlus, true, adder);                // рекурсия и передаем флаг true
           }, 300);                                                          
           return;                                                          // обрываем выполнение здесь т.к вызвали снова
         }
@@ -316,16 +319,16 @@ function AtomasModel () {
         if (index2 >= Atom.atoms.length) index2 = 0;
 
         isDarkPlus = false;                                 // DARK PLUS изчезает в любом случае 
-        flag = false;                                       // ..................
+        flag = false;                                       
       }
       this.scoreCounter(adder + 1);
       atom.update(adder);                                   // по новому заряду получаем элемент из таблицы и устанавливаем
       this.setPosition();                                   // пересчитываем координаты
-      this.checkForFusionTriggers();                        // проверяем на слияние
+      this.checkForConnectTriggers();                        // проверяем на слияние
     }, 300);
   }
 
-  this.getAdjacentAtoms = (index) => {
+  this.getNeighboringAtoms = (index) => {
     let index1 = index - 1;                            // 1 - сосед слева
     let index2 = index + 1;                            // 2 - сосед справа
     if (index1 < 0) index1 = Atom.atoms.length - 1;    // если наш атом первый, то сосед слева в конце массива
@@ -341,7 +344,7 @@ function AtomasModel () {
     );
   }
 
-  this.isFuseable = (index1, index2, isDarkPlus) => {
+  this.isItConnectable = (index1, index2, isDarkPlus) => {
     return (                                                            // вернет true если все условия выполняются
       (Atom.atoms[index1].Z == Atom.atoms[index2].Z || isDarkPlus) &&   // Если соседи одинаковые или есть DARK PLUS
       (Atom.atoms[index1].Z > 0 || isDarkPlus) &&                       // Ни один из соседей не "+"
@@ -349,15 +352,17 @@ function AtomasModel () {
     );
   }
 
-  this.transitionUpperIndexAtoms = (plusI, index1, index2) => {
-    let positionOfPlus = Atom.atoms[plusI].el.style.transform;   // получаем координаты плюса
-    let lowerPosition = Atom.atoms[index1].el.style.transform;   // получаем координаты элемента слева от плюса
-    let upperPosition = Atom.atoms[index2].el.style.transform;   // получаем координаты элемента справа от плюса
-    [indexTwiceLower, indexTwiceUpper] = this.getUpperIndeces(plusI);    // вызываем функцию для проверки элементов +-2 от "+"
+  this.getSurroundingIndexes = (plusI, index1, index2) => {
+    let positionOfPlus = Atom.atoms[plusI].el.style.transform;        // получаем координаты плюса
+    let lowerPosition = Atom.atoms[index1].el.style.transform;        // получаем координаты элемента слева от плюса
+    let upperPosition = Atom.atoms[index2].el.style.transform;        // получаем координаты элемента справа от плюса
+
+    [indexTwiceLower, indexTwiceUpper] = this.getIndex(plusI);        // вызываем функцию для проверки элементов +-2 от "+"
+
     Atom.atoms[indexTwiceLower].el.style.transform = lowerPosition;   // координаты -2 от "+" = координаты -1 от "+"
     Atom.atoms[indexTwiceUpper].el.style.transform = upperPosition;   // координаты +2 от "+" = координаты +1 от "+"
-    Atom.atoms[index1].el.style.transform = positionOfPlus;    // координаты -1 от "+" = координаты "+"
-    Atom.atoms[index2].el.style.transform = positionOfPlus;    // координаты +1 от "+" = координаты "+"
+    Atom.atoms[index1].el.style.transform = positionOfPlus;           // координаты -1 от "+" = координаты "+"
+    Atom.atoms[index2].el.style.transform = positionOfPlus;           // координаты +1 от "+" = координаты "+"
 
     elTwLo = Atom.atoms[indexTwiceLower].el;
     elTwUp = Atom.atoms[indexTwiceUpper].el;
@@ -367,7 +372,7 @@ function AtomasModel () {
     myAtomasView.fusionTransform(elTwLo, elTwUp, elLo, elUp);
   }
 
-  this.getUpperIndeces = (plusI) => {          // получаем на вход индекс элемента "+"
+  this.getIndex = (plusI) => {                 // получаем на вход индекс элемента "+"
     let indexTwiceLower = plusI - 2;           // получаем индекс левее плюса на 2
     let indexTwiceUpper = plusI + 2;           // получаем индекс правее плюса на 2
     if (indexTwiceLower < 0) indexTwiceLower = Atom.atoms.length + indexTwiceLower;      // если -2 от "+" то считаем с конца 
@@ -384,12 +389,12 @@ function AtomasModel () {
     }
     if (e.target.classList.contains('circle') || e.target.parentNode.classList.contains('circle')) {
       if (params.preventIntermediateClick) {
-        this.renderDirectClick(e);
+        this.workCenterClick(e);
         this.aIntermediateClick();
         return false;
       }
     }
-    if (!params.preventIntermediateClick) this.renderIntermediateClick(e);// если можно кликать тогда вып функцию
+    if (!params.preventIntermediateClick) this.workMiddleClick(e);// если можно кликать тогда вып функцию
   }
 
   this.showMenu = () => {
@@ -414,11 +419,11 @@ function AtomasModel () {
   }
 
   this.startNewGame = (page) => {
-    page.parentNode.removeChild(page);
-    Atom.atoms = [];
-    params.container.innerHTML = '';
-    params.score = 0;
-    this.installation();
+    page.parentNode.removeChild(page);   // удаляем меню 
+    Atom.atoms = [];                     // обнуляем значения
+    params.container.innerHTML = '';    
+    params.score = 0;                    
+    this.installation();                 // устанавливаем новые элементы 
   }
 
   this.showBoard = (menu) => {
@@ -438,7 +443,7 @@ function AtomasModel () {
     tr.appendChild(nameTd);
     tr.appendChild(scoreTd);
 
-    firebase.database().ref().child('recordes').on('value', rec => {
+    firebase.database().ref().child('recordes').on('value', rec => {  // запрашиваем данные в базе и записываем их в таблицу
       for (let player of rec.val()) {
         let tr = document.createElement('tr');
         let tdName = document.createElement('td'); 
@@ -470,16 +475,16 @@ function AtomasModel () {
   }
 
   this.hideBoard = (board) => {
-    board.parentNode.removeChild(board);
+    board.parentNode.removeChild(board);    // принимаем элемент и удаляем его из верстки
   }
 
   this.scoreCounter = (counter) => {
-    params.score += counter;
-    myAtomasView.showScore(params.score);
+    params.score += counter;                   // считаем очки
+    myAtomasView.showScore(params.score);      // отображаем очки
   }
 
   this.checkForLosing = () => {
-    return (Atom.atoms.length > 13) ? true : false;
+    return (Atom.atoms.length > 13) ? true : false;  // проверка количества атомов в круге
   }
 
   this.showGameOver = () => {
@@ -507,15 +512,15 @@ function AtomasModel () {
   }
 
   this.showInput = () => {
-    return params.score > params.lessResult ? true : false;
+    return params.score > params.lessResult ? true : false;   // показывать инпут или нет ?
   }
 
   this.checkValue = (value, button) => {
-    value == false ? button.disabled = true : button.disabled = false;
+    value == false ? button.disabled = true : button.disabled = false;  // проверка значений в инпуте
   }
 
   this.changeData = (name) => {
-    this.changeBase(name, params.score);
+    this.changeBase(name, params.score);  // получаем имя из инпута и передаем в функцию изменения базы данных
   }
 
   // получаем элементы и модификаторы из базы
@@ -531,14 +536,14 @@ function AtomasModel () {
     let table;
     firebase.database().ref().child('recordes').on('value', rec => {
       let pos;
-      table = rec.val();
-      for (i = table.length - 1; i >= 0; i--) {
-        if (table[i].score < pScore) pos = i;
+      table = rec.val();                           // таблица из базы
+      for (i = table.length - 1; i >= 0; i--) {    // перебираем
+        if (table[i].score < pScore) pos = i;      // находим выше какого значения наш рекорд и получаем позицию в таблице
       }
-      table.splice(pos, 0, {name: pName, score: pScore});
-      table.pop();
+      table.splice(pos, 0, {name: pName, score: pScore});     // записываем нового игрока на эту позицию в таблице 
+      table.pop();                                            // последнее значение удаляем
     });
-    firebase.database().ref().child('recordes').set(table);
+    firebase.database().ref().child('recordes').set(table);   // заносим значение в базу 
   }
 
   // функции - переключатели
