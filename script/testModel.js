@@ -19,35 +19,35 @@ function AtomasModel () {
     minus : 0.37,                        // у minus вероятность выпадения - 7%
     neutrino : 0.39,                     // у neutrino вероятность выпадения - 2%
     dark : 0.4,                          // у dark вероятность выпадения - 1% 
+
+    atoms : [],
+    elements : {},
+    modifiers : {},
   };
 
-  class Atom {
-    constructor(num, modifier = false, cl = 'circle') {
-      let elements = modifier ? Atom.modifiers : Atom.elements;    // берем элементы из таблицы либо вспомогательные если они есть
-      this.Z = elements[num].Z;                                    // заряд ядра
-      this.X = elements[num].X;                                    // сокр. название
-      this.name = elements[num].name;                              // название
-      this.color = `${elements[num].color}`;                       // цвет
-      this.el = document.createElement('div');                     // для нового элемента создаем новый блок
-      this.setClass(cl);                                           // вызываем методы
-      this.show();                                                 // кроме метода update
-      this.triggerModifierClasses();
-    }
+  function Atom (num, modifier = false, cl = 'circle') {
 
-    setClass(cl) {
-      this.el.setAttribute('class', cl);                           // добавляем класс в каждый элемент
-    }
+    this.element = modifier ? params.modifiers : params.elements;    // берем элементы из таблицы либо вспомогательные если они есть
+    this.Z = this.element[num].Z;                                // заряд ядра
+    this.X = this.element[num].X;                                // сокр. название
+    this.name = this.element[num].name;                          // название
+    this.color = `${this.element[num].color}`;                   // цвет
+    this.el = document.createElement('div');                     // для нового элемента создаем новый блок
 
-    update(num) {
-      this.Z = Atom.elements[num].Z;
-      this.X = Atom.elements[num].X;
-      this.name = Atom.elements[num].name;
-      this.color = `#${Atom.elements[num].color}`;
+
+    
+    this.setClass = (cl) => this.el.setAttribute('class', cl);
+
+    this.update = function(num) {
+      this.Z = params.elements[num].Z;
+      this.X = params.elements[num].X;
+      this.name = params.elements[num].name;
+      this.color = `#${params.elements[num].color}`;
       this.show();
       this.triggerModifierClasses();
     }
 
-    show() {
+    this.show = function() {
       this.el.innerHTML = this.X;                       // добавляем текст в каждый элемент
       let number = document.createElement('div');       // создаем блок для номера 
       number.innerHTML = this.Z > 0 ? this.Z : ' ';     // проверяем заряд и добавляем текст в блок если нужно 
@@ -55,70 +55,72 @@ function AtomasModel () {
       this.el.style.backgroundColor = this.color;       // устанавливаем цвет
     }
 
-    triggerModifierClasses() {
+    this.triggerModifierClasses = function() {
       if (this.Z == -2 || this.Z == -3) appModel.pIntermediateClick(); // если минус или нейтрино, отключаем реакцию на клик между элементов
     }
+
+    this.setClass(cl);                                          
+    this.show();                                                
+    this.triggerModifierClasses();
   }
 
-  Atom.atoms = [];                                                // атомы которые находятся в круге кроме центрального
-  Atom.elements = {};                                             // таблица элементов
-  Atom.modifiers = {};                                            // таблица модификаторов
-  Atom.setElements = elem => Atom.elements = elem;                // добавление элементов в Atom.elements
-  Atom.setModifiers = mod => Atom.modifiers = mod;                // добавление модификаторов в Atom.modifiers
+  this.setElements = elem => params.elements = elem;                
+  this.setModifiers = mod => params.modifiers = mod;
 
 
-  class Generator extends Atom {              // наследуем класс Generator от класса Atom
-    constructor(num) {                        // принимает один параметр 
-      super(num, false, 'circle-centered');   // вызываем родительский конструктор с нвыми параметрами
-    }
 
-    createNewValue(preset = false) {
-      let elements = Atom.modifiers;          // модификаторы
-      let randomV = Math.random();            // случайное число 
-      let x;
+  // class Generator extends Atom {              // наследуем класс Generator от класса Atom
+  //   constructor(num) {                        // принимает один параметр 
+  //     super(num, false, 'circle-centered');   // вызываем родительский конструктор с новыми параметрами
+  //   }
 
-      if (randomV <= params.plus) x = 3;              // сравниваем вероятности с рандомным числом  
-      else if (randomV <= params.minus) x = 2;        // присваеваем x значение в зависимости от выпавшего числа 
-      else if (randomV <= params.neutrino) x = 1;     
-      else if (randomV <= params.dark.plus) x = 0;
-      else {
-        elements = Atom.elements;       // если рандомное число больше 0.4, тогда в центре будет появляться элемент таблицы
-        let sum = 0;                    // для появления актуальных элементов в таблицы т.е
-        let length = 0;                 // если в круге 12, 14, 15, и 20 элементы не выпадает 1 или 100 элементы например
-        for (let atom of Atom.atoms) {  // проходим по массиву из присутствующих элементов
-          if (atom.Z > 0) {             // забираем только элементы БЕЗ МОДИФИКАТОРОВ !!!
-            sum += atom.Z;              // получаем сумму зарядов, например (12+14+15+20 = 61)
-            length++;                   // получаем количество элементов в круге, например (4)
-          }
-        }  
-        sum /= length;                                // получаем среднее значение заряда (61 / 4 = 15.25)
-        x = Math.floor(Math.random() * 3 + sum - 1);  // получаем число +-1 от среднего значения заряда
-        if (x < 0) x = 0;                             // если оно меньше 0 то приравниваем к 0
-      }
+  //   createNewValue(preset = false) {
+  //     let elements = Atom.modifiers;          // модификаторы
+  //     let randomV = Math.random();            // случайное число 
+  //     let x;
 
-      if (preset !== false) {          // если нужна переустановка
-        x = preset;                    // 
-        elements = Atom.elements;
-        if (x < 0) {                   
-          x = 3;
-          elements = Atom.modifiers;
-        }
-      }
-      return [elements, x];
-    }
+  //     if (randomV <= params.plus) x = 3;              // сравниваем вероятности с рандомным числом  
+  //     else if (randomV <= params.minus) x = 2;        // присваеваем x значение в зависимости от выпавшего числа 
+  //     else if (randomV <= params.neutrino) x = 1;     
+  //     else if (randomV <= params.dark.plus) x = 0;
+  //     else {
+  //       elements = Atom.elements;       // если рандомное число больше 0.4, тогда в центре будет появляться элемент таблицы
+  //       let sum = 0;                    // для появления актуальных элементов в таблицы т.е
+  //       let length = 0;                 // если в круге 12, 14, 15, и 20 элементы не выпадает 1 или 100 элементы например
+  //       for (let atom of Atom.atoms) {  // проходим по массиву из присутствующих элементов
+  //         if (atom.Z > 0) {             // забираем только элементы БЕЗ МОДИФИКАТОРОВ !!!
+  //           sum += atom.Z;              // получаем сумму зарядов, например (12+14+15+20 = 61)
+  //           length++;                   // получаем количество элементов в круге, например (4)
+  //         }
+  //       }  
+  //       sum /= length;                                // получаем среднее значение заряда (61 / 4 = 15.25)
+  //       x = Math.floor(Math.random() * 6 + sum - 4);  // получаем число +-4 от от среднего значения заряда
+  //       if (x < 0) x = 0;                             // если оно меньше 0 то приравниваем к 0
+  //     }
 
-    update(preset = false) {
-      let [elements, x] = this.createNewValue(preset);      // создаем новое значение заряда 
-      this.Z = elements[x].Z;
-      this.X = elements[x].X;
-      this.name = elements[x].name;
-      this.color = `#${elements[x].color}`;
+  //     if (preset !== false) {          // если нужна переустановка
+  //       x = preset;                    // 
+  //       elements = Atom.elements;
+  //       if (x < 0) {                   
+  //         x = 3;
+  //         elements = Atom.modifiers;
+  //       }
+  //     }
+  //     return [elements, x];
+  //   }
 
-      this.show();
-      this.triggerModifierClasses();
-      appModel.pConversionToPlus();
-    }
-  }
+  //   update(preset = false) {
+  //     let [elements, x] = this.createNewValue(preset);      // создаем новое значение заряда 
+  //     this.Z = elements[x].Z;
+  //     this.X = elements[x].X;
+  //     this.name = elements[x].name;
+  //     this.color = `#${elements[x].color}`;
+
+  //     this.show();
+  //     this.triggerModifierClasses();
+  //     appModel.pConversionToPlus();
+  //   }
+  // }
 
   this.init = (view, main) => {
     myAtomasView = view;
@@ -146,9 +148,9 @@ function AtomasModel () {
   }
 
   this.installation = () => {
-    for (let i = 0; i < 6; i++) Atom.atoms.push(new Atom(Math.floor(Math.random() * 3)));   // изначально добавили 6 элементов
-    params.generator = new Generator(Math.floor(Math.random() * 4));                        // и центральный элемент
-    for (let atom of Atom.atoms) params.container.appendChild(atom.el);                     // добавили в контейнер элементы
+    for (let i = 0; i < 6; i++) params.atoms.push(new Atom(Math.floor(Math.random() * 3)));   // изначально добавили 6 элементов
+    //params.generator = new Generator(Math.floor(Math.random() * 6));                        // и центральный элемент
+    for (let atom of params.atoms) params.container.appendChild(atom.el);                     // добавили в контейнер элементы
     params.container.appendChild(params.generator.el);                                      // добавили центральный элемент в контейнер
     this.resize();                                                                          // устанавливаем нужный размер
     myAtomasView.showScore(params.score);                                                   // отображаем счет
@@ -214,16 +216,16 @@ function AtomasModel () {
     if (generatorPrevValue != -3) {                                    // если это не нейтрино
       params.container.removeChild(Atom.atoms[clickedAtomI].el);       // удаляем элемент по которому кликнули
       Atom.atoms.splice(clickedAtomI, 1);                              // из массива тоже
-      this.setPosition();                                              // устанавливаем новые координаты для остальных
+      this.setPosition();                                                   // устанавливаем новые координаты
       for (let atom of Atom.atoms) {                                   // проходим по массиву снова
-        if (atom.Z == -1) this.checkForFusions(atom);                  // ищем "+" если есть - проверяем на слияние
+        if (atom.Z == -1) this.checkForFusions(atom);                          // ищем "+" если есть - проверяем на слияние
       }  
-      this.aConversionToPlus();                                        // разрешаем превращение в "+"
+      this.aConversionToPlus();                                             // разрешаем превращение в "+"
     }
   }
 
   this.getDistance = (el1, el2, x, y) => {   // получаем элементы и координаты клика и проверяем расстояние
-    let radius = 9 / 2 * params.vmin;                              // считаем радиус 
+    let radius = 7 / 2 * params.vmin;                              // считаем радиус 
     let cx1 = el1.getBoundingClientRect().left + radius;           // узнаем центры полученных элементов
     let cy1 = el1.getBoundingClientRect().top + radius;
     let cx2 = el2.getBoundingClientRect().left + radius;
@@ -234,12 +236,12 @@ function AtomasModel () {
     return Math.sqrt(Math.pow(mx - x, 2) + Math.pow(my - y, 2));   // получаем расстояние от клика до центра 
   }
 
-  this.addAtom = (atomBefor) => {        // функция добавления элемента  // на вход получаем элемент после которого нужно добавить 
+  this.addAtom = (atomAfter) => {        // функция добавления элемента  // на вход получаем элемент после которого нужно добавить 
     this.pClick();                                                       // отключаем возможность клика
     // создаем новый элемент
     let atom = params.generator.Z < 0 ? new Atom(4 + params.generator.Z, true) : new Atom(params.generator.Z - 1);
-    params.container.insertBefore(atom.el, atomBefor.el);                // добавляем элемент в контейнер 
-    Atom.atoms.splice(Atom.atoms.indexOf(atomBefor) + 1, 0, atom);       // добавляем в массив
+    params.container.insertBefore(atom.el, atomAfter.el);                // добавляем элемент в контейнер 
+    Atom.atoms.splice(Atom.atoms.indexOf(atomAfter) + 1, 0, atom);       // добавляем в массив
     params.generator.update();                                           // обновляем центр
     this.setPosition();                                                   // просчитываем координаты и устанавливаем на места элементы
     this.doTheFusionDance(atom);                                          // вызываем функцию слияния и передаем аргументом новый атом
@@ -274,7 +276,7 @@ function AtomasModel () {
       let adder;                                          // объявляем сумматор (сумматор - заряд элемента после сложения)
       if (intermediateResult) {                           // если повторная проверка и есть промежуточные результат 
         adder = intermediateResult;                       // сумматор равен промежуточному результату
-        this.scoreCounter(adder);                         // увеличиваем кол-во очков
+        this.scoreCounter(adder);
       } else {                                            // если нет то проверяем на DARK PLUS
         // если есть DARK PLUS то получаем элемент с зарядом выше на 1 от макс заряда соседей
         if (isDarkPlus) adder = Math.max(Atom.atoms[index1].Z, Atom.atoms[index2].Z) + 1; // например если соседи 6 и 4 то получим 7
@@ -364,6 +366,8 @@ function AtomasModel () {
     elLo = Atom.atoms[index1].el;
     elUp = Atom.atoms[index2].el;
 
+
+
     myAtomasView.fusionTransform(elTwLo, elTwUp, elLo, elUp);
   }
 
@@ -398,15 +402,12 @@ function AtomasModel () {
     let continueBtn = document.createElement('button');
     let newGameBtn = document.createElement('button');
     let topTenBtn = document.createElement('button');
-    let rulesBtn = document.createElement('button');
-
     myAtomasMain.appendChild(menu);
     menu.appendChild(menuBtns);
     menuBtns.appendChild(continueBtn);
     menuBtns.appendChild(newGameBtn);
     menuBtns.appendChild(topTenBtn);
-    menuBtns.appendChild(rulesBtn);
-    myAtomasView.drawMenu(menu, menuBtns, continueBtn, newGameBtn, topTenBtn, rulesBtn);
+    myAtomasView.drawMenu(menu, menuBtns, continueBtn, newGameBtn, topTenBtn);
   }
 
   this.continue = (menu) => {
@@ -452,19 +453,6 @@ function AtomasModel () {
     });
 
     myAtomasView.drawBoard(board, goBack, h1, table, nameTd, scoreTd);
-    myAtomasMain.appendChild(board);
-    menu.parentNode.removeChild(menu);
-  }
-
-  this.showRules = (menu) => {
-    let board = document.createElement('div');
-    let goBack = document.createElement('div');
-    let text = document.createElement('div');
-
-    board.appendChild(goBack);
-    board.appendChild(text);
-
-    myAtomasView.drawRules(board, goBack, text);
     myAtomasMain.appendChild(board);
     menu.parentNode.removeChild(menu);
   }
@@ -521,8 +509,8 @@ function AtomasModel () {
   // получаем элементы и модификаторы из базы
   firebase.database().ref().child('elements').on('value', elem => {
     firebase.database().ref().child('modifiers').on('value', mod => {
-      Atom.setElements(elem.val());
-      Atom.setModifiers(mod.val());
+      this.setElements(elem.val());
+      this.setModifiers(mod.val());
       this.installation();
     })
   });  

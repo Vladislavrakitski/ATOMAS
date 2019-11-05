@@ -9,14 +9,14 @@ firebase.initializeApp({
 });
 
 // firebase.database().ref().child('recordes').set([
-//   {name: "Polina", score: 1000},
-//   {name: "Vlad", score: 964},
+//   {name: "Vlad", score: 1000},
+//   {name: "Terminator", score: 964},
 //   {name: "Strange", score: 834},
 //   {name: "LuckyMan", score: 777},
 //   {name: "Rocky", score: 671},
 //   {name: "Jerry", score: 532},
 //   {name: "Tomas", score: 435},
-//   {name: "Donald Trump", score: 312},
-//   {name: "VV Putin", score: 224},
+//   {name: "DTrump", score: 312},
+//   {name: "VVPutin", score: 224},
 //   {name: "Big Boss", score: 11},
 // ]);

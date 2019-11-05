@@ -3,7 +3,10 @@ body, html {
   padding: 0;
   height: 100%;
   width: 100%;
-  background: rgb(255, 194, 209);
+  background: #ffd3b8;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
 }
 #carousel {
   position: absolute;
@@ -98,11 +101,11 @@ body, html {
   z-index: 100;
 }
 
-.menu, .gameOver, .table{
+.menu, .gameOver, .table, .rules{
   position: fixed;
   height: calc(100% + 20px);
   width: 100%;
-  background: rgb(255, 164, 187);
+  background: #ffd3b8;
   z-index: 999;
 }
 
@@ -127,7 +130,7 @@ body, html {
   font-weight: 900;
   border: none;
   border-bottom: 3px solid black;
-  background: rgb(255, 164, 187);
+  background: #ffd3b8;
 }
 .gameOver input:focus {
   outline: 0;
@@ -148,7 +151,7 @@ button {
   text-align: center;
   border-radius: 2vmin;
   border: 1px solid black;
-  background-color: rgb(255, 214, 216);
+  background-color: #ffdec9;
   transition: 0.2s;
   font-family: 'Inconsolata', monospace;
 }
@@ -188,10 +191,16 @@ button:focus {
 }
 .table table tr td {
   border: 1px solid black;
-  font-size: 20px;
+  font-size: 3vmin;
   text-align: center;
 }
 .table table tr:first-child td {
-  font-size: 30px;
+  font-size: 4vmin;
   font-weight: 900;
+}
+
+.rules div:last-child {
+  margin: 12vmin 12vmin 0 12vmin;
+  font-size: 3vmin;
+  font-family: 'Inconsolata', monospace;
 }
