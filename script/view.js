@@ -28,7 +28,7 @@ function AtomasView () {
 
   this.setTransform = (el, x, y) => {
     el.style.transform = `translate(${x}px, ${y}px)`;  
-    el.style.transition = 'all 0.4s'; 
+    el.style.transition = 'all 0.2s'; 
   }
 
   this.fusionTransform = (elTwLo, elTwUp, elLo, elUp) => {

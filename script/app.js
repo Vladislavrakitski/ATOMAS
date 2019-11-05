@@ -14,9 +14,9 @@ firebase.initializeApp({
 //   {name: "Strange", score: 834},
 //   {name: "LuckyMan", score: 777},
 //   {name: "Rocky", score: 671},
-//   {name: "Jerry", score: 532},
+//   {name: "Robot", score: 532},
 //   {name: "Tomas", score: 435},
-//   {name: "DTrump", score: 312},
-//   {name: "VVPutin", score: 224},
+//   {name: "DTmin", score: 312},
+//   {name: "VVCosmo", score: 224},
 //   {name: "Big Boss", score: 11},
 // ]);
