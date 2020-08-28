@@ -1,11 +1,11 @@
 firebase.initializeApp({
-  apiKey: "AIzaSyCvum8AeyYaKIW0klj4CXItQ6y3D0eJ5uc",
-  authDomain: "atomgamesrecords.firebaseapp.com",
-  databaseURL: "https://atomgamesrecords.firebaseio.com",
-  projectId: "atomgamesrecords",
-  storageBucket: "atomgamesrecords.appspot.com",
-  messagingSenderId: "968899050953",
-  appId: "1:968899050953:web:56a5d393759fdca289fc18"
+  apiKey: "<apiKey>",
+  authDomain: "<authDomain>",
+  databaseURL: "<databaseURL>",
+  projectId: "<projectId>",
+  storageBucket: "<storageBucket>",
+  messagingSenderId: "<messagingSenderId>",
+  appId: "<appId>"
 });
 
 // firebase.database().ref().child('recordes').set([
